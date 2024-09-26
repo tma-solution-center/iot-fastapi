@@ -1,21 +1,18 @@
-import uvicorn
-from fastapi import FastAPI
+# import uvicorn
+from fastapi import FastAPI, APIRouter
+from fastapi.responses import JSONResponse
 from starlette.middleware.cors import CORSMiddleware
-from DATA_CHANNEL.group_processor_api import router as router_group_processor_api
-from DATA_CHANNEL.pushing_data_minio import router as router_api_json_minio
-from DATA_CHANNEL.postgre import router as router_postgre
-from DATA_CHANNEL.mysql import router as router_mysql
-from DATA_IMPORT.main import router as router_data_import
-from DATA_MODEL.main import router as router_data_model
-from DATAFLOW.main import router as router_data_flow
-from MARKETING_AUTOMATION.main import router as router_marketing_automation
-from SEGMENTATION.main import router as router_segmentation
+
+from upload_media_file.main import router as router_upload_media
+from USER_INGESTION.main import router as router_user_ingestion
+from SCHEDULER.main import router as router_scheduler
+from security import generate_token, validate_token
 
 
 def get_application() -> FastAPI:
     application = FastAPI(
-        title='FastAPI with EDP',
-        description='Integrate FastAPI with EDP',
+        title='IOT Fast API',
+        description='IOT Fast API',
         openapi_url="/openapi.json",
         docs_url="/docs"
     )
@@ -32,17 +29,17 @@ def get_application() -> FastAPI:
 
 
 app = get_application()
+router = APIRouter()
+@router.get('/api_key')
+def generate_token_router():
+    result = generate_token()
+    return JSONResponse(status_code=200, content=result)
 
-app.include_router(router_group_processor_api, prefix="/main", tags=["DATA_CHANNEL"])
-app.include_router(router_api_json_minio, prefix="/pushing-data-minio", tags=["DATA_CHANNEL_API"])
-app.include_router(router_postgre, prefix="/main", tags=["DATA_CHANNEL_DATABASE"])
-app.include_router(router_mysql, prefix="/main", tags=["DATA_CHANNEL_DATABASE"])
-app.include_router(router_data_import, prefix="/main", tags=["DATA_IMPORT"])
-app.include_router(router_data_model, prefix="/main", tags=["DATA_MODEL"])
-app.include_router(router_data_flow, prefix="/main", tags=["DATA_FLOW"])
-app.include_router(router_marketing_automation, prefix="/main", tags=["MARKETING_AUTOMATION"])
-app.include_router(router_segmentation, prefix="/main", tags=["SEGMENTATION"])
 
-if __name__ == "__main__":
-    uvicorn.run("main:app", host="0.0.0.0", port=5000, reload=True)
+app.include_router(router, prefix="/main", tags=["API_KEY"])
+app.include_router(router_upload_media, prefix="/main", tags=["UPLOAD_MEDIA"])
+app.include_router(router_user_ingestion, prefix="/main", tags=["USER_INGESTION"])
+app.include_router(router_scheduler, prefix="/main", tags=["SCHEDULER"])
 
+# if __name__ == "__main__":
+#     uvicorn.run("main:app", host="0.0.0.0", port=5000, reload=True)

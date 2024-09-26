@@ -1,4 +1,4 @@
-# cdp-on-premise
+# IOT
 
 
 
@@ -15,15 +15,14 @@ Already a pro? Just edit this README.md and make it your own. Want to make it ea
 
 ```
 cd existing_repo
-git remote add origin https://gitlab.tma.com.vn/data-solution-center/customer-data-platform/cdp-on-premise.git
+git remote add origin https://gitlab.tma.com.vn/data-solution-center/customer-data-platform/iot.git
 git branch -M main
 git push -uf origin main
-
 ```
 
 ## Integrate with your tools
 
-- [ ] [Set up project integrations](https://gitlab.tma.com.vn/data-solution-center/customer-data-platform/cdp-on-premise/-/settings/integrations)
+- [ ] [Set up project integrations](https://gitlab.tma.com.vn/data-solution-center/customer-data-platform/iot/-/settings/integrations)
 
 ## Collaborate with your team
 

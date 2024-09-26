@@ -1,36 +1,28 @@
 # Config connection constant
-TRINO_CONNECTION_STRING = "trino://admin@trino.trino.svc.cluster.local/iceberg"
-# TRINO_CONNECTION_STRING = "trino://admin@localhost:8088/iceberg"
-TEMP_CATALOG = 'iceberg'
+TRINO_CONNECTION_STRING = "trino://admin@trino.trino.svc.cluster.local/lakehouse"
+TEMP_CATALOG = 'lakehouse'
 TEMP_SCHEMA = 'temp'
 DEFAULT_CATALOG = 'lakehouse'
 DEFAULT_SCHEMA = 'cdp'
 HIVE_CATALOG = 'hive'
 
-# Path of share volume airflow and fast api
-NFS_PATH = '/nfs/'
+BUCKET_NAME = 'upload'
+VIDEO_PATH = 'video'
+AUDIO_PATH = 'audio'
 
-# API URL
-SEND_SMS_API_URL = 'https://dev.cdp-tma.link/api/cdp-data/api/send-message/e-sms'
-MINIO_BUCKET_NAME = 'cdp-schema'
+ALLOWED_CONTENT_TYPES_VIDEO = ['video/mp4', 'video/x-msvideo', 'video/quicktime', 'video/x-matroska',
+                               'video/webm', 'video/x-flv', 'video/x-ms-wmv', 'video/mpeg', 'video/3gpp']
 
-TRINO_DATA_TYPE_MAPPING = {
-    "int": "INTEGER",
-    "float": "DOUBLE",
-    "decimal": "DECIMAL",
-    "string": "VARCHAR",
-    "str": "VARCHAR",
-    "date": "DATE",
-    "time": "TIME",
-    "datetime": "TIMESTAMP",
-    "bool": "BOOLEAN"
-}
+ALLOWED_CONTENT_TYPES_AUDIO = [
+    'audio/mpeg', 'audio/wav', 'audio/ogg', 'audio/flac',
+    'audio/aac', 'audio/mp4', 'audio/webm', 'audio/midi',
+    'audio/amr', 'audio/aiff'
+]
 
-MINIO_URL_STR = "minio_url"
-ACCESS_KEY_STR = "access_key"
-SECRET_KEY_STR = "secret_key"
-BUCKET_NAME_STR = 'bucket_name'
-
+# Minio Configuration
 MINIO_SERVICE_NAME = 'minio'
-
-HTTP_URL = 'http://192.168.76.120:30237'
+NAMESPACE = 'minio'
+MINIO_URL = f'minio.minio.svc.cluster.local:9000'
+ACCESS_KEY = 'R2mXxc9KIqVrtZfV4tYF'
+SECRET_KEY = 'TfVdwcIxBQc2GFegzvbzyn6VAXYSro4PNwHtnTcG'
+MAX_RETRIES = 3

@@ -1,0 +1,11 @@
+{
+	"folders": [
+		{
+			"path": "../deploy"
+		},
+		{
+			"path": "."
+		}
+	],
+	"settings": {}
+}

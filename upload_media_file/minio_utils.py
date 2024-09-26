@@ -1,4 +1,3 @@
-
 from datetime import datetime, timedelta
 from minio import Minio
 from minio.helpers import ObjectWriteResult
@@ -6,40 +5,25 @@ from minio.error import S3Error
 import logging
 import time
 from typing import BinaryIO
-# from VaultUtil import VaultUtil
 
+from constants import MINIO_URL, SECRET_KEY, ACCESS_KEY, MAX_RETRIES
 
-# vault = VaultUtil(VAULT_ADDRESS,VAULT_KEY,UNSEAL_KEY)
-# secrets=vault.get_secret(ENGINE_NAME,SECRET_PATH)
-
-logger = logging.getLogger("MinioUtil")
+logger = logging.getLogger("minio_utils")
 logging.basicConfig()
 logger.setLevel(logging.INFO)
-
-
-# Minio Configuration
-MINIO_SERVICE_NAME = 'minio'
-NAMESPACE = 'minio'
-MINIO_URL = f'{MINIO_SERVICE_NAME}.{NAMESPACE}.svc.cluster.local:9000'
-ACCESS_KEY = 'oEkdMsaShZeWL4iLvVkc'
-SECRET_KEY = 'aid0O1LALeCMflemw4XQSmWEHmAhzDvAlbvQtxdj'
-MAX_RETRIES = 3
 
 
 class MinioUtil():
     __instance = None
 
     @staticmethod
-    def get_instance(): 
+    def get_instance():
         """ Static access method. """
         if not MinioUtil.__instance:
             MinioUtil.__instance = MinioUtil()
         return MinioUtil.__instance
 
     def __init__(self):
-
-        # vault = VaultUtil(VAULT_ADDRESS,VAULT_KEY,UNSEAL_KEY)
-        # secrets=vault.get_secret(ENGINE_NAME,SECRET_PATH)
 
         self.minio_url = MINIO_URL
         self.access_key = ACCESS_KEY
@@ -50,12 +34,6 @@ class MinioUtil():
             secret_key=self.secret_key,
             secure=False,
         )
-        # self.make_bucket()
-
-    # def make_bucket(self) -> str:
-    #     if not self.client.bucket_exists(self.bucket_name):
-    #         self.client.make_bucket(self.bucket_name)
-    #     return self.bucket_name
 
     def presigned_get_object(self, bucket_name, object_name):
         # Request URL expired after 7 days
@@ -65,7 +43,8 @@ class MinioUtil():
             expires=timedelta(days=7)
         )
         return url
-    def presigned_put_object(self,bucket_name,object_name):
+
+    def presigned_put_object(self, bucket_name, object_name):
         url = self.client.presigned_put_object(
             bucket_name=bucket_name,
             object_name=object_name,
@@ -80,12 +59,12 @@ class MinioUtil():
         except Exception as e:
             logger.e(f'[x] Exception: {e}')
             return False
-        
-    def put_object(self,bucket_name,object_name,file_data:BinaryIO):
-        retry_count=0
+
+    def put_object(self, bucket_name, object_name, file_data: BinaryIO):
+        retry_count = 0
         while True:
             try:
-                result:ObjectWriteResult=self.client.put_object(
+                result: ObjectWriteResult = self.client.put_object(
                     bucket_name=bucket_name,
                     object_name=object_name,
                     data=file_data,
@@ -93,41 +72,41 @@ class MinioUtil():
                     part_size=10 * 1024 * 1024
                 )
                 logger.info(f"Uploaded object '{object_name}' to bucket '{bucket_name}' successfully")
-                return result 
+                return result
             except S3Error as s3error:
                 if retry_count < MAX_RETRIES:
                     delay = 2
                     logger.error(f"Error uploading object '{object_name}'. Retrying in {delay} seconds...")
                     time.sleep(delay)
-                    retry_count+=1
-                else: 
+                    retry_count += 1
+                else:
                     logger.error(f"Failed to upload object '{object_name}' after {MAX_RETRIES} retries.")
                     raise s3error
-        
-    def fput_object(self,bucket_name,object_name,local_file_path):
-        retry_count=0
+
+    def fput_object(self, bucket_name, object_name, local_file_path):
+        retry_count = 0
         while True:
             try:
-                result:ObjectWriteResult=self.client.fput_object(
+                result: ObjectWriteResult = self.client.fput_object(
                     bucket_name=bucket_name,
                     object_name=object_name,
                     file_path=local_file_path
                 )
                 logger.info(f"Uploaded object '{object_name}' to bucket '{bucket_name}' successfully")
-                return result 
+                return result
             except S3Error as s3error:
                 if retry_count < MAX_RETRIES:
                     delay = 2
                     logger.error(f"Error uploading object '{object_name}'. Retrying in {delay} seconds...")
                     time.sleep(delay)
-                    retry_count+=1
-                else: 
+                    retry_count += 1
+                else:
                     logger.error(f"Failed to upload object '{object_name}' after {MAX_RETRIES} retries.")
                     raise s3error
-        
-    def delete_object(self,bucket_name,file_name):
+
+    def delete_object(self, bucket_name, file_name):
         try:
-            self.client.remove_object(bucket_name,file_name)
+            self.client.remove_object(bucket_name, file_name)
             result = {
                 'bucket_name': bucket_name,
                 'file_name': file_name,
@@ -136,4 +115,3 @@ class MinioUtil():
             return result
         except Exception as e:
             raise Exception(e)
-
