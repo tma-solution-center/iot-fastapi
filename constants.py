@@ -46,5 +46,5 @@ SECRET_KEY = 'TfVdwcIxBQc2GFegzvbzyn6VAXYSro4PNwHtnTcG'
 MAX_RETRIES = 3
 
 # IOT
-IOT_BUCKET_NAME = 'iot-demo'
-IOT_SCHEMA = 'iotdemo'
+IOT_BUCKET_NAME = 'iot-topics'
+IOT_SCHEMA = 'iot_topics'

@@ -14,7 +14,7 @@ logger.setLevel(logging.INFO)
 router = APIRouter()
 
 
-@router.post("/data/get-data-parquet-files", tags=["DATA"])
+@router.post("/data/get-data-parquet-files", dependencies=[Depends(validate_token)], tags=["DATA"])
 def get_data_parquet_files(request: DataMinionPathInfo):
     try:
         return JSONResponse(status_code=200, content=helper.get_data_from_parquet(request))
@@ -22,7 +22,7 @@ def get_data_parquet_files(request: DataMinionPathInfo):
         return JSONResponse(status_code=400, content={"message": f"{str(e)}"})
 
 
-@router.post("/data/create-external-table", tags=["DATA"])
+@router.post("/data/create-external-table", dependencies=[Depends(validate_token)], tags=["DATA"])
 def create_external_table(request: TableInfoRequest):
     try:
         return JSONResponse(status_code=200, content=helper.create_external_table(request))
@@ -30,7 +30,7 @@ def create_external_table(request: TableInfoRequest):
         return JSONResponse(status_code=400, content={"message": f"{str(e)}"})
 
 
-@router.post("/data/insert-data", tags=["DATA"])
+@router.post("/data/insert-data", dependencies=[Depends(validate_token)], tags=["DATA"])
 def insert(request: InsertRequest):
     try:
         return JSONResponse(status_code=200, content=helper.insert_data(request))
