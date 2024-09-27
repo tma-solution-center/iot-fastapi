@@ -5,8 +5,10 @@ from io import BytesIO
 from PROCESS_DATA.models import DataMinionPathInfo, TableInfoRequest, InsertRequest
 from common.CommonUtils import CommonUtils
 from common.SqlAlchemyUtil import SqlAlchemyUtil
-from common.minio_utils import MinioUtil
-from constants import IOT_BUCKET_NAME, TRINO_CONNECTION_STRING, IOT_SCHEMA, HIVE_CATALOG, TRINO_DATA_TYPE_MAPPING
+from common.MinioUtils import MinioUtils
+from common.VaultUtils import VaultUtils
+from constants import IOT_BUCKET_NAME, IOT_SCHEMA, HIVE_CATALOG, TRINO_DATA_TYPE_MAPPING, \
+    YEAR_STR, MONTH_STR, DAY_STR, HOUR_STR
 import pyarrow.parquet as pq
 import pandas as pd
 import logging
@@ -15,11 +17,11 @@ logger = logging.getLogger(__name__)
 logging.basicConfig()
 logger.setLevel(logging.INFO)
 
-minio_util = MinioUtil().get_instance()
-YEAR_STR = "year"
-MONTH_STR = "month"
-DAY_STR = "day"
-HOUR_STR = "hour"
+minio_util = MinioUtils().get_instance()
+vault_utils = VaultUtils()
+
+secret_data = vault_utils.read_secret(path='iot-trino')
+TRINO_CONNECTION_STRING = secret_data['trino_connection_string']
 
 
 def get_data_from_parquet(request: DataMinionPathInfo):

@@ -3,8 +3,8 @@ from typing import BinaryIO
 
 import unicodedata
 
-from constants import BUCKET_NAME
-from common.minio_utils import MinioUtil
+from constants import BUCKET_NAME_UPLOAD_MEDIA
+from common.MinioUtils import MinioUtils
 
 
 def upload_media_file_to_minio(file_name: str, file_data: BinaryIO, content_type, sub_path):
@@ -14,8 +14,8 @@ def upload_media_file_to_minio(file_name: str, file_data: BinaryIO, content_type
     datatime_as_path = utc_now.strftime("%Y/%m/%d")
     object_name = f"/{sub_path}/{datatime_as_path}/{datetime_suffix}_{file_name}"
 
-    minio_util = MinioUtil().get_instance()
-    result = minio_util.put_object(BUCKET_NAME, object_name, file_data)
+    minio_util = MinioUtils().get_instance()
+    result = minio_util.put_object(BUCKET_NAME_UPLOAD_MEDIA, object_name, file_data)
     return {
         "bucket_name": result.bucket_name,
         "object_name": result.object_name,

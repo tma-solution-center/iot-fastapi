@@ -7,7 +7,7 @@ DEFAULT_CATALOG = 'lakehouse'
 DEFAULT_SCHEMA = 'cdp'
 HIVE_CATALOG = 'hive'
 
-BUCKET_NAME = 'upload'
+BUCKET_NAME_UPLOAD_MEDIA = 'upload'
 VIDEO_PATH = 'video'
 AUDIO_PATH = 'audio'
 
@@ -48,3 +48,7 @@ MAX_RETRIES = 3
 # IOT
 IOT_BUCKET_NAME = 'iot-topics'
 IOT_SCHEMA = 'iot_topics'
+YEAR_STR = "year"
+MONTH_STR = "month"
+DAY_STR = "day"
+HOUR_STR = "hour"

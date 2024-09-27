@@ -7,24 +7,30 @@ from minio.error import S3Error
 import logging
 import time
 from typing import BinaryIO
-
-from common.CommonUtils import CommonUtils
-from constants import MINIO_URL, SECRET_KEY, ACCESS_KEY, MAX_RETRIES
+from common.VaultUtils import VaultUtils
 
 logger = logging.getLogger(__name__)
 logging.basicConfig()
 logger.setLevel(logging.INFO)
 
+vault_utils = VaultUtils()
+secret_data = vault_utils.read_secret(path='iot-minio')
 
-class MinioUtil():
+MINIO_URL = secret_data['minio_url']
+ACCESS_KEY = secret_data['minio_access_key']
+SECRET_KEY = secret_data['minio_secret_key']
+MAX_RETRIES = secret_data['max_retries']
+
+
+class MinioUtils:
     __instance = None
 
     @staticmethod
     def get_instance():
         """ Static access method. """
-        if not MinioUtil.__instance:
-            MinioUtil.__instance = MinioUtil()
-        return MinioUtil.__instance
+        if not MinioUtils.__instance:
+            MinioUtils.__instance = MinioUtils()
+        return MinioUtils.__instance
 
     def __init__(self):
 
