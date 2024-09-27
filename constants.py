@@ -36,12 +36,12 @@ TRINO_DATA_TYPE_MAPPING = {
 MINIO_SERVICE_NAME = 'minio'
 NAMESPACE = 'minio'
 MINIO_URL = f'minio.minio.svc.cluster.local:9000'
-ACCESS_KEY = 'R2mXxc9KIqVrtZfV4tYF'
-SECRET_KEY = 'TfVdwcIxBQc2GFegzvbzyn6VAXYSro4PNwHtnTcG'
+# ACCESS_KEY = 'R2mXxc9KIqVrtZfV4tYF'
+# SECRET_KEY = 'TfVdwcIxBQc2GFegzvbzyn6VAXYSro4PNwHtnTcG'
 
 # MINIO_URL = f'11.11.7.162:30666'
-# ACCESS_KEY = 'JSYxxtSamW2C74QyELXp'
-# SECRET_KEY = 'wgg1pbALe3nybZ4CabvZlOP6fVgc1NaliHyOd12s'
+ACCESS_KEY = 'JSYxxtSamW2C74QyELXp'
+SECRET_KEY = 'wgg1pbALe3nybZ4CabvZlOP6fVgc1NaliHyOd12s'
 
 MAX_RETRIES = 3
 
