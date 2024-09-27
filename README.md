@@ -18,6 +18,7 @@ cd existing_repo
 git remote add origin https://gitlab.tma.com.vn/data-solution-center/customer-data-platform/iot.git
 git branch -M main
 git push -uf origin main
+test
 ```
 
 ## Integrate with your tools

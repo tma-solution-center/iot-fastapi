@@ -1,0 +1,83 @@
+name: Build Docker Image and Deploy to K8s cluster
+
+on:
+  push:
+    branches:
+      - main  # Trigger when there's a push to the main branch
+    workflow_dispatch:  # Allow manual trigger
+
+jobs:
+  build-docker-image:
+    runs-on: ubuntu-latest
+
+    outputs:
+      timestamp: ${{ steps.timestamp.outputs.timestamp }}
+    
+    steps:
+      # Step 1: Checkout the source repository
+      - name: Checkout Source Repo
+        uses: actions/checkout@v3
+
+      # Step 2: Set up Docker Buildx
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # Step 3: Log in to Docker Hub
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_PASSWORD }}
+          
+      # Step 4: Generate a timestamp and store it in an environment variable
+      - name: Generate timestamp
+        id: timestamp
+        run: echo "::set-output name=timestamp::$(date +'%Y%m%d%H%M%S')"
+
+      # Step 5: Build and push the Docker image with the timestamped tag
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: tmasc/iot-fastapi:v-${{ steps.timestamp.outputs.timestamp }}
+
+      # Step 6: Log out from Docker Hub (optional)
+      - name: Log out from Docker Hub
+        run: docker logout
+
+  update-deploy-repo:
+    runs-on: ubuntu-latest
+    needs: build-docker-image  # This job depends on the completion of the previous job
+    environment: production  # Assign this job to an environment requiring approval
+
+    steps:
+      # Step 1: Set up Git configuration
+      - name: Set up Git
+        run: |
+          git config --global user.name ${{ vars.GITHUBUSER }}
+          git config --global user.email ${{ vars.GITHUBEMAIL }}
+      
+      # Step 2: Checkout the target repository to be updated
+      - name: Checkout Deploy Repo
+        run: |
+          git clone https://$GITHUB_ACTOR:${{ secrets.PAT_TOKEN }}@github.com/tma-solution-center/iot-deploy.git
+          cd iot-deploy
+          
+      # Step 3: Update the tag in the Deploy repo's file
+      - name: Update tag in Deploy repo
+        run: |
+          cd iot-deploy
+          sed -i '5s/.*/      tag: v-'${{ needs.build-docker-image.outputs.timestamp }}'/' charts/fastapi/values.yaml
+          
+      # Step 4: Commit and push changes to the Deploy repo
+      - name: Push code to Deploy Repo
+        run: |
+          cd iot-deploy
+          if git diff --quiet; then
+            echo "No changes detected."
+          else
+            git add .
+            git commit -m "Update Docker tag to ${{ env.TIMESTAMP }} from GitHub Actions"
+            git push origin main
+          fi
