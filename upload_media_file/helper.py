@@ -4,7 +4,7 @@ from typing import BinaryIO
 import unicodedata
 
 from constants import BUCKET_NAME
-from upload_media_file.minio_utils import MinioUtil
+from common.minio_utils import MinioUtil
 
 
 def upload_media_file_to_minio(file_name: str, file_data: BinaryIO, content_type, sub_path):

@@ -1,4 +1,6 @@
 from datetime import datetime, timedelta
+from io import BytesIO
+
 from minio import Minio
 from minio.helpers import ObjectWriteResult
 from minio.error import S3Error
@@ -6,9 +8,10 @@ import logging
 import time
 from typing import BinaryIO
 
+from common.CommonUtils import CommonUtils
 from constants import MINIO_URL, SECRET_KEY, ACCESS_KEY, MAX_RETRIES
 
-logger = logging.getLogger("minio_utils")
+logger = logging.getLogger(__name__)
 logging.basicConfig()
 logger.setLevel(logging.INFO)
 
@@ -115,3 +118,21 @@ class MinioUtil():
             return result
         except Exception as e:
             raise Exception(e)
+
+    def get_object(self, bucket_name, file_name):
+        try:
+            # Download the file as a BytesIO stream
+            file_data = BytesIO(self.client.get_object(bucket_name, file_name).read())
+            return file_data
+        except Exception as e:
+            print(f"Error reading or processing {file_name}: {e}")
+            return BytesIO()  # Return empty DataFrame on error
+
+    def get_list_files(self, bucket_name, prefix, recursive=False):
+        try:
+            objects = self.client.list_objects(bucket_name, prefix=prefix, recursive=recursive)
+            list_file_path = [obj.object_name for obj in objects]
+            return list_file_path
+        except S3Error as e:
+            logger.error(f"Error listing objects: {e}")
+            raise e
