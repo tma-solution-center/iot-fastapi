@@ -25,12 +25,12 @@ TRINO_CONNECTION_STRING = secret_data['trino_connection_string']
 
 
 def get_data_from_parquet(request: DataMinionPathInfo):
-    table_name = request.table_name
+    base_path = request.base_path
     year_path = f'/{YEAR_STR}={request.year}' if request.year is not None else ''
     month_path = f'/{MONTH_STR}={request.month}' if request.month is not None else ''
     day_path = f'/{DAY_STR}={request.day}' if request.day is not None else ''
     hour_path = f'/{HOUR_STR}={request.hour}' if request.hour is not None else ''
-    path = f'{table_name}{year_path}{month_path}{day_path}{hour_path}/'
+    path = f'{base_path}{year_path}{month_path}{day_path}{hour_path}/'
     recursive = request.hour is None
 
     list_file_path = minio_util.get_list_files(IOT_BUCKET_NAME, path, recursive)

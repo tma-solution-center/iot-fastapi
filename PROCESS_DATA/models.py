@@ -6,7 +6,7 @@ from typing import Optional, List, Literal, Union
 
 
 class DataMinionPathInfo(BaseModel):
-    table_name: str
+    base_path: str
     year: Optional[str] = Field(default=None)
     month: Optional[Literal["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"]] = None
     day: Optional[Literal["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15",
