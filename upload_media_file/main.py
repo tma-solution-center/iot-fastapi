@@ -20,7 +20,7 @@ router = APIRouter()
 def upload_file(file: UploadFile = File(...)):
     logger.info(f"Input filename: {file.filename}")
     if file.content_type not in ALLOWED_CONTENT_TYPES_VIDEO:
-        return JSONResponse(status_code=200, content={
+        return JSONResponse(status_code=400, content={
             'message': f"Importing data currently does not support the content type '{file.content_type}'"})
     try:
         result = upload_media_file_to_minio(file.filename, file.file, file.content_type, VIDEO_PATH)
@@ -35,7 +35,7 @@ def upload_file(file: UploadFile = File(...)):
 def upload_file(file: UploadFile = File(...)):
     logger.info(f"Input filename: {file.filename}")
     if file.content_type not in ALLOWED_CONTENT_TYPES_AUDIO:
-        return JSONResponse(status_code=200, content={
+        return JSONResponse(status_code=400, content={
             'message': f"Importing data currently does not support the content type '{file.content_type}'"})
     try:
         result = upload_media_file_to_minio(file.filename, file.file, file.content_type, AUDIO_PATH)
