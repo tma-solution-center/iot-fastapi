@@ -64,3 +64,54 @@ class InsertRequest(BaseModel):
     values: List[List[InsertColumns]]
 
     model_config = ConfigDict(populate_by_name=True)
+
+
+class DateInfo(BaseModel):
+    year: str
+    month: Optional[Literal["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"]]
+    day: Optional[Literal["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15",
+    "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31"]]
+
+    model_config = ConfigDict(populate_by_name=True)
+
+    @model_validator(mode='before')
+    def validate_dates(cls, values):
+
+        # Check if the values are strings and represent numbers
+        for field in ['year', 'month', 'day']:
+            if values.get(field) is not None:
+                if not values[field].isdigit():
+                    raise ValueError(f"'{field}' must be a string containing numeric characters only.")
+        return values
+
+    def to_date(self) -> Optional[date]:
+        """Chuyển đổi DateInfo thành đối tượng datetime.date nếu đủ thông tin."""
+        if self.year and self.month and self.day:
+            return date(int(self.year), int(self.month), int(self.day))
+        return None
+
+
+class DateRange(BaseModel):
+    start_date: DateInfo
+    end_date: DateInfo
+
+    model_config = ConfigDict(populate_by_name=True)
+
+    @model_validator(mode='after')
+    def validate_date_range(cls, values):
+        start_date = values.start_date.to_date()
+        end_date = values.end_date.to_date()
+
+        if start_date and end_date and start_date >= end_date:
+            raise ValueError("start_date must be earlier than end_date.")
+
+        return values
+
+
+class AggregationDataByDateRangeRequest(BaseModel):
+    column_name: str
+    agg_func: Optional[Literal["sum", "min", "max", "avg", "count",
+    "SUM", "MIN", "MAX", "COUNT", "AVG"]]
+    date_range: DateRange
+
+    model_config = ConfigDict(populate_by_name=True)

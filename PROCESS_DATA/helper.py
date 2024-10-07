@@ -2,7 +2,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime
 from io import BytesIO
 
-from PROCESS_DATA.models import DataMinionPathInfo, TableInfoRequest, InsertRequest
+from PROCESS_DATA.models import DataMinionPathInfo, TableInfoRequest, InsertRequest, AggregationDataByDateRangeRequest
 from common.CommonUtils import CommonUtils
 from common.SqlAlchemyUtil import SqlAlchemyUtil
 from common.MinioUtils import MinioUtils
@@ -153,3 +153,35 @@ def combine_parquet_files(bucket_name, file_list):
     combined_df = pd.concat(dfs, ignore_index=True)
     # Convert DataFrame to JSON
     return combined_df.to_dict(orient='records')
+
+
+def aggregation_data_by_date_range(request: AggregationDataByDateRangeRequest):
+    query = f"""
+    SELECT {request.agg_func}({request.column_name}) as {request.agg_func}_{request.column_name} 
+    FROM {HIVE_CATALOG}.{IOT_SCHEMA}.report
+    WHERE
+    (
+        year > {request.date_range.start_date.year} OR 
+        (year = {request.date_range.start_date.year} AND
+        month > {request.date_range.start_date.month}) OR 
+        (year = {request.date_range.start_date.year} AND 
+        month = {request.date_range.start_date.month} AND 
+        day >= {request.date_range.start_date.day})
+    ) AND 
+    (
+        year < {request.date_range.end_date.year} OR 
+        (year = {request.date_range.end_date.year} AND 
+        month < {request.date_range.end_date.month}) OR 
+        (year = {request.date_range.end_date.year} AND 
+        month = {request.date_range.end_date.month} AND 
+        day <= {request.date_range.end_date.day})
+    )
+    """
+
+    sql_alchemy_util = SqlAlchemyUtil(TRINO_CONNECTION_STRING)
+    try:
+        result = sql_alchemy_util.execute_query_to_get_data(query)
+        return result[0]
+    except Exception as e:
+        logger.error(f'Error when query data: {str(e)}')
+        raise

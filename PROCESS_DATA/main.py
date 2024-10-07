@@ -3,7 +3,7 @@ from fastapi.responses import JSONResponse
 import logging
 
 from PROCESS_DATA import helper
-from PROCESS_DATA.models import DataMinionPathInfo, TableInfoRequest, InsertRequest
+from PROCESS_DATA.models import DataMinionPathInfo, TableInfoRequest, InsertRequest, AggregationDataByDateRangeRequest
 from fastapi import Depends
 from security import validate_token
 
@@ -34,5 +34,13 @@ def create_external_table(request: TableInfoRequest):
 def insert(request: InsertRequest):
     try:
         return JSONResponse(status_code=200, content=helper.insert_data(request))
+    except Exception as e:
+        return JSONResponse(status_code=500, content={"message": f"{str(e)}"})
+
+
+@router.post("/data/get-data-by-date-range", dependencies=[Depends(validate_token)], tags=["DATA"])
+def aggregation_data_by_date_range(request: AggregationDataByDateRangeRequest):
+    try:
+        return JSONResponse(status_code=200, content=helper.aggregation_data_by_date_range(request))
     except Exception as e:
         return JSONResponse(status_code=500, content={"message": f"{str(e)}"})
