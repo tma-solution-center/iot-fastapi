@@ -122,12 +122,12 @@ def delivery_report(err, msg):
 @router.post("/produce/", dependencies=[Depends(validate_token)], tags=["USER_INGESTION"])
 def produce_message(message: KafkaMessage):
     try:
-        producer.produce(message.topic, key=None, value=json.dumps(message.data), callback=delivery_report)
+        producer.produce(dependencies.get("topic"), key=None, value=json.dumps(message.data), callback=delivery_report)
         producer.flush()  # Wait for all messages to be delivered
     except KafkaException as e:
         raise HTTPException(status_code=500, detail=str(e))
     
-    return {"status": "success", "data": message.data, "topic": message.topic}
+    return {"status": "success", "data": message.data, "topic": dependencies.get("topic")}
 
 # @router.post("/produce/debezium/", dependencies=[Depends(validate_token)], tags=["USER_INGESTION"])
 # def produce_debezium_message(message: DebeziumMessage):
