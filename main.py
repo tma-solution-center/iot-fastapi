@@ -31,7 +31,7 @@ def get_application() -> FastAPI:
 
 app = get_application()
 router = APIRouter()
-@router.post('/api_key')
+@router.get('/api_key')
 def generate_token_router(topic: str):
     result = generate_token(topic)
     
