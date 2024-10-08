@@ -47,8 +47,8 @@ def validate_token(http_authorization_credentials=Depends(reusable_oauth2)) -> s
         if payload.get('username') != 'admin':
             raise HTTPException(status_code=403, detail="Could not validate credentials")
         return {
-            username: payload.get('username'),
-            topic: payload.get('topic')
+            "username": payload.get('username'),
+            "topic": payload.get('topic')
         } 
     except(jwt.PyJWTError, ValidationError):
         raise HTTPException(
