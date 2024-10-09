@@ -17,7 +17,7 @@ router = APIRouter()
 
 
 @router.post("/upload_media/upload_video/", dependencies=[Depends(validate_token)], tags=["UPLOAD_MEDIA"])
-def upload_file(file: UploadFile = File(...)):
+async def upload_file(file: UploadFile = File(...)):
     logger.info(f"Input filename: {file.filename}")
     if file.content_type not in ALLOWED_CONTENT_TYPES_VIDEO:
         return JSONResponse(status_code=400, content={
@@ -32,7 +32,7 @@ def upload_file(file: UploadFile = File(...)):
 
 
 @router.post("/upload_media/upload_audio/", dependencies=[Depends(validate_token)], tags=["UPLOAD_MEDIA"])
-def upload_file(file: UploadFile = File(...)):
+async def upload_file(file: UploadFile = File(...)):
     logger.info(f"Input filename: {file.filename}")
     if file.content_type not in ALLOWED_CONTENT_TYPES_AUDIO:
         return JSONResponse(status_code=400, content={
