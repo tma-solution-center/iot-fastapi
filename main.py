@@ -32,8 +32,9 @@ def get_application() -> FastAPI:
 app = get_application()
 router = APIRouter()
 @router.get('/api_key')
-def generate_token_router():
-    result = generate_token()
+def generate_token_router(topic: str):
+    result = generate_token(topic)
+    
     return JSONResponse(status_code=200, content=result)
 
 

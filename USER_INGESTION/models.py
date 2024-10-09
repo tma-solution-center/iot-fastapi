@@ -14,7 +14,6 @@ class ConnectorConfig(BaseModel):
 
 
 class KafkaMessage(BaseModel):
-    topic: str
     data: dict
 
 

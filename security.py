@@ -29,13 +29,14 @@ def get_params(filename='parameters.pem'):
 
 SECURITY_ALGORITHM, SECRET_KEY = get_params()
 
-def generate_token():
+def generate_token(topic: str):
     # expire = datetime.utcnow() + timedelta(
     #     seconds = 60 # Expired after 3 hours
     # )
     to_encode = {
         # "exp": expire, 
-        "username": "admin"
+        "username": "admin",
+        "topic": topic,
     }
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=SECURITY_ALGORITHM)
     return {'api_key': [encoded_jwt]}
@@ -45,7 +46,10 @@ def validate_token(http_authorization_credentials=Depends(reusable_oauth2)) -> s
         payload = jwt.decode(http_authorization_credentials.credentials, SECRET_KEY, algorithms=[SECURITY_ALGORITHM])
         if payload.get('username') != 'admin':
             raise HTTPException(status_code=403, detail="Could not validate credentials")
-        return payload.get('username')
+        return {
+            "username": payload.get('username'),
+            "topic": payload.get('topic')
+        } 
     except(jwt.PyJWTError, ValidationError):
         raise HTTPException(
             status_code=403,
